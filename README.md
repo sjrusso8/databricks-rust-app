@@ -1,4 +1,4 @@
-# rust-api
+# Rust App on Databricks
 
 A minimal REST API — **axum** + **sqlx** — backed by **Databricks Lakebase**
 (autoscaling Postgres), deployable as a Databricks App via an asset bundle.

@@ -7,8 +7,6 @@ artifacts:
     path: .
   
 
-# Files uploaded to the app's source directory. The statically-linked musl
-# binary + launcher + app spec are all the runtime needs.
 sync:
   include:
     - target/x86_64-unknown-linux-musl/release/rust-api
@@ -16,8 +14,6 @@ sync:
     - main.py
 
 resources:
-  # Autoscaling Lakebase (Postgres) project. Creating it auto-provisions a
-  # `production` branch and a `primary` read-write endpoint.
   postgres_projects:
     rust_api_lb:
       project_id: rust-api-app
