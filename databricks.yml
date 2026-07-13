@@ -1,0 +1,45 @@
+bundle:
+  name: rust-api
+
+artifacts:
+  default: 
+    build: cargo build --release --target x86_64-unknown-linux-musl 
+    path: .
+  
+
+# Files uploaded to the app's source directory. The statically-linked musl
+# binary + launcher + app spec are all the runtime needs.
+sync:
+  include:
+    - target/x86_64-unknown-linux-musl/release/rust-api
+    - app.yaml
+    - main.py
+
+resources:
+  # Autoscaling Lakebase (Postgres) project. Creating it auto-provisions a
+  # `production` branch and a `primary` read-write endpoint.
+  postgres_projects:
+    rust_api_lb:
+      project_id: rust-api-app
+      display_name: rust-api
+      default_branch: projects/rust-api-app/branches/production
+      default_endpoint_settings:
+        autoscaling_limit_min_cu: 0.5
+        autoscaling_limit_max_cu: 2.0
+
+  apps:
+    rust_api:
+      name: rust-api
+      source_code_path: .
+      # Bind the app to the Lakebase project. The App runtime injects PG*
+      # connection env vars (host, service-principal user, OAuth password)
+      # for the bound branch/database, and grants the SP connect+create.
+      resources:
+        - name: lakebase
+          postgres:
+            # Referencing the project's exported `name` (= projects/rust-api)
+            # both yields the branch path and creates a Terraform dependency so
+            # the app is created only after the project + branch exist.
+            branch: ${resources.postgres_projects.rust_api_lb.name}/branches/production
+            database: ${resources.postgres_projects.rust_api_lb.name}/branches/production/databases/databricks-postgres
+            permission: CAN_CONNECT_AND_CREATE

@@ -1,0 +1,8 @@
+command:
+  - python
+  - main.py
+
+# No env needed: the bound Lakebase resource (databricks.yml) injects PGHOST/
+# PGUSER/PGDATABASE/PGSSLMODE, main.py mints PGPASSWORD, and the platform injects
+# DATABRICKS_APP_PORT. Do NOT set DATABRICKS_APP_PORT here — the ingress routes
+# to the port it assigns.
