@@ -31,11 +31,11 @@ cp .env.example .env    # set PGHOST + PGUSER (PGHOST from the command below)
 
 # host of the deployed Lakebase endpoint:
 databricks postgres list-endpoints projects/rust-api-app/branches/production \
-  -p fevm -o json | jq -r '.[0].status.hosts.host'
+  -o json | jq -r '.[0].status.hosts.host'
 
 # export a fresh OAuth token as the password (valid ~1h):
 export PGPASSWORD=$(databricks postgres generate-database-credential \
-  projects/rust-api-app/branches/production/endpoints/primary -p fevm -o json | jq -r .token)
+  projects/rust-api-app/branches/production/endpoints/primary -o json | jq -r .token)
 
 cargo run
 curl localhost:8080/api/users
@@ -56,8 +56,8 @@ credentials. `main.py` mints the password from those and hands off to the binary
 rustup target add x86_64-unknown-linux-musl
 cargo build --release --target x86_64-unknown-linux-musl
 
-databricks bundle deploy -p fevm
-databricks bundle run rust_api -p fevm    # start (or restart) the app
+databricks bundle deploy -p <profile>
+databricks bundle run rust_api -p <profile>    # start (or restart) the app
 ```
 
 > **Token lifetime:** `main.py` mints the DB token once at startup (~1h). Fine

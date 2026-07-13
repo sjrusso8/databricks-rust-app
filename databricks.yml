@@ -33,9 +33,6 @@ resources:
       resources:
         - name: lakebase
           postgres:
-            # Referencing the project's exported `name` (= projects/rust-api)
-            # both yields the branch path and creates a Terraform dependency so
-            # the app is created only after the project + branch exist.
             branch: ${resources.postgres_projects.rust_api_lb.name}/branches/production
             database: ${resources.postgres_projects.rust_api_lb.name}/branches/production/databases/databricks-postgres
             permission: CAN_CONNECT_AND_CREATE
